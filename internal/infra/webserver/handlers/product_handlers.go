@@ -7,6 +7,7 @@ import (
 	"github.com/ediogama/go-apis/internal/dto"
 	"github.com/ediogama/go-apis/internal/entity"
 	"github.com/ediogama/go-apis/internal/infra/database"
+	"github.com/go-chi/chi/v5"
 )
 
 type ProductHandler struct {
@@ -38,4 +39,22 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 
+}
+
+func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	product, err := h.ProductDB.FindByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "aplication/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(product)
 }
