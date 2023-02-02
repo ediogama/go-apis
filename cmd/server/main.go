@@ -5,12 +5,14 @@ import (
 	"net/http"
 
 	"github.com/ediogama/go-apis/configs"
+	_ "github.com/ediogama/go-apis/docs"
 	"github.com/ediogama/go-apis/internal/entity"
 	"github.com/ediogama/go-apis/internal/infra/database"
 	"github.com/ediogama/go-apis/internal/infra/webserver/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -25,7 +27,7 @@ import (
 
 // @license.name		Edio Gama License
 
-// @host				localhost:8080
+// @host				localhost:8000
 // @BasePath			/
 // @securityDefinitions.apikey	ApiKeyAuth
 // @in header
@@ -66,6 +68,8 @@ func main() {
 
 	r.Post("/users", userHandler.CreateUser)
 	r.Post("/users/generate_token", userHandler.GetJWT)
+
+	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 
 	http.ListenAndServe(":8000", r)
 }
